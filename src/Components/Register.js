@@ -1,17 +1,46 @@
 import React,{Component} from 'react';
-import 'semantic-ui-css/semantic.min.css';
-import {  } from 'semantic-ui-react';
+import { 
+	Grid, Header, Card, Form, Button, Image 
+} from 'semantic-ui-react';
 
+import img from "../img/Icon.png";
 
 class Register extends Component{
+	render(){
+		return(
+			<div>
+				
+				<Grid padded centered>
+					<Grid.Row>
+					
+						<Grid.Column textAlign="center" width={16}>
+							<Header as="h1">
+								Register
+								<br/>
+								<Image src={img} />
+							</Header>
+							<br/>
+						</Grid.Column>
 
-    render(){
-        return(
-            <div>
-                <h1>Componente Register</h1>
-            </div>
-        );
-    }
+						<Grid.Column computer={5} tablet={8}>
+							<Form size="big" className="formRegister">
+
+								<Form.Input placeholder="Name" icon="user" />
+								<Form.Input placeholder="Email" type="email" icon="mail" />
+								<Form.Input placeholder="Password" type="password" icon="lock" />
+								<Form.Input placeholder="Confirm Password" type="password" icon="lock" />
+
+								<Button color="grey" className="btnForm">Register now</Button>
+							</Form>
+						</Grid.Column>
+
+					</Grid.Row>
+
+				</Grid>
+
+			</div>
+		);
+	}
 }
 
 export default Register;

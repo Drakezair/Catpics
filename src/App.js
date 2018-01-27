@@ -8,6 +8,9 @@ import {BrowserRouter as Router, Route,Switch} from 'react-router-dom';
 import Login from './Components/Login';
 import Register from './Components/Register';
 
+// css
+import 'semantic-ui-css/semantic.min.css';
+
 class App extends Component {
 
   render() {
