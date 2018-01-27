@@ -1,3 +1,11 @@
+/* Form styles */
+input::-webkit-input-placeholder{
+	color: black !important;
+}
+
+.register{
+	padding: 40px 0 !important;
+}
 
 .formRegister{
 	text-align: center;

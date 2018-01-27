@@ -10,7 +10,7 @@ class Register extends Component{
 		return(
 			<div>
 				
-				<Grid padded centered>
+				<Grid padded centered className="register">
 					<Grid.Row>
 					
 						<Grid.Column textAlign="center" width={16}>
@@ -22,7 +22,7 @@ class Register extends Component{
 							<br/>
 						</Grid.Column>
 
-						<Grid.Column computer={5} tablet={8}>
+						<Grid.Column computer={5} tablet={8} mobile={14}>
 							<Form size="big" className="formRegister">
 
 								<Form.Input placeholder="Name" icon="user" />
