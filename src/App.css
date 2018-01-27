@@ -1,0 +1,14 @@
+
+.formRegister{
+	text-align: center;
+}
+
+.formRegister:visited{
+	color: black;
+}
+
+.btnForm{
+	border-radius: 10px !important;
+	font-size: 18px !important;
+	align-items: center;
+}

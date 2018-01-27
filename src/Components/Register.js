@@ -1,7 +1,9 @@
 import React,{Component} from 'react';
 import { 
-	Grid, Header, Card, Form, Button 
+	Grid, Header, Card, Form, Button, Image 
 } from 'semantic-ui-react';
+
+import img from "../img/Icon.png";
 
 class Register extends Component{
 	render(){
@@ -11,32 +13,27 @@ class Register extends Component{
 				<Grid padded centered>
 					<Grid.Row>
 					
-					<Grid.Column textAlign="center" width={16}>
-						<Header as="h1" >
-							Register
-						</Header>
-					</Grid.Column>
+						<Grid.Column textAlign="center" width={16}>
+							<Header as="h1">
+								Register
+								<br/>
+								<Image src={img} />
+							</Header>
+							<br/>
+						</Grid.Column>
 
-					<br/>
-					<br/>
-					<br/>
+						<Grid.Column computer={5} tablet={8}>
+							<Form size="big" className="formRegister">
 
-					<Grid.Column width={5}>
-						<Card fluid>
-							<Card.Content>
-								<Form>
+								<Form.Input placeholder="Name" icon="user" />
+								<Form.Input placeholder="Email" type="email" icon="mail" />
+								<Form.Input placeholder="Password" type="password" icon="lock" />
+								<Form.Input placeholder="Confirm Password" type="password" icon="lock" />
 
+								<Button color="grey" className="btnForm">Register now</Button>
+							</Form>
+						</Grid.Column>
 
-									<Form.Input label="Name" icon="user" />
-									<Form.Input label="Email" type="email" icon="mail" />
-									<Form.Input label="Password" type="password" icon="lock" />
-									<Form.Input label="Confirm Password" type="password" icon="lock" />
-								
-									<Button color="pink" fluid >register</Button>
-								</Form>
-							</Card.Content>
-						</Card>
-					</Grid.Column>
 					</Grid.Row>
 
 				</Grid>
