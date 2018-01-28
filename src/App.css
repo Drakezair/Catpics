@@ -1,14 +1,17 @@
 /* Form styles */
-input::-webkit-input-placeholder{
-	color: black !important;
-}
-
 .register{
 	padding: 40px 0 !important;
 }
 
+input::-webkit-input-placeholder{
+	color: black !important;
+}
+
+.ui.header{
+	color: white !important;
+}
+
 .formRegister{
-	text-align: center;
 }
 
 .formRegister:visited{
@@ -19,4 +22,37 @@ input::-webkit-input-placeholder{
 	border-radius: 10px !important;
 	font-size: 18px !important;
 	align-items: center;
+}
+
+.forms{
+
+	height: 102%;
+	background: linear-gradient(45deg, #bf0000, #5000bf, #00651a);
+	background-size: 600% 600%;
+
+	-webkit-animation: AnimationName 19s ease infinite;
+	-moz-animation: AnimationName 19s ease infinite;
+	-o-animation: AnimationName 19s ease infinite;
+	animation: AnimationName 19s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+	0%{background-position:0% 50%}
+	50%{background-position:100% 50%}
+	100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+	0%{background-position:0% 50%}
+	50%{background-position:100% 50%}
+	100%{background-position:0% 50%}
+}
+@-o-keyframes AnimationName {
+	0%{background-position:0% 50%}
+	50%{background-position:100% 50%}
+	100%{background-position:0% 50%}
+}
+@keyframes AnimationName { 
+	0%{background-position:0% 50%}
+	50%{background-position:100% 50%}
+	100%{background-position:0% 50%}
 }
