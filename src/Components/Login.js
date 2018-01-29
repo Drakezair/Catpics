@@ -1,7 +1,8 @@
 import React,{Component} from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import '../CSS/Login.css';
-import { Grid,Segment,Image,Form } from 'semantic-ui-react';
+import { Grid,Segment,Image,Form,Divider,Button, Header } from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
 import profile from '../Assets/profile.png';
 
@@ -32,8 +33,15 @@ class Login extends Component{
                              iconPosition='left'
                              placeholder='Password'
                             />
+                            <Form.Group inline >
+                                <Link  to='/register'>Register now</Link>
+                                <Link style={{position:'absolute', right:0}} to='/forget'>forget?</Link>
+                            </Form.Group>
+
                         </Form>
 
+
+                        <Button content='Login' />
                     </Segment>
 
                 </Grid.Column>

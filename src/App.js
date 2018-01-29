@@ -7,6 +7,7 @@ import {BrowserRouter as Router, Route,Switch} from 'react-router-dom';
 
 import Login from './Components/Login';
 import Register from './Components/Register';
+import Forget from './Components/Forget';
 
 // css
 import 'semantic-ui-css/semantic.min.css';
@@ -19,6 +20,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Login} />
             <Route path ="/register" component={Register} />
+            <Route path ="/forget" component={Forget} />
           </Switch>
         </Router>
     );
