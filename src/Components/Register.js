@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {Link} from "react-router-dom";
 import { 
-	Grid, Header, Card, Form, Button, Image 
+	Grid, Header, Form, Button, Image 
 } from 'semantic-ui-react';
 
 
