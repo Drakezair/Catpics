@@ -35,7 +35,7 @@ class Timeline extends Component{
         <Menu fixed='top'  style={{backgroundColor:'rgba(140, 0, 183,0.95)'}} >
           <Container>
             <Image src={logo} style={{height: 50, margin: 6}} />
-            <h1 style={{marginBottom:'auto',marginTop:'auto', fontFamily:'Open sans', fontWeight:300, color:'#fff', fontSize:'1.4em'}} >std::Grams</h1>
+            <h1 style={{marginBottom:'auto',marginTop:'auto', fontFamily:'Open sans', fontWeight:300, color:'#fff', fontSize:'1.4em'}} >CatPic's</h1>
           </Container>
         </Menu>
 
@@ -44,12 +44,16 @@ class Timeline extends Component{
             <Grid.Row>
 
               <Grid.Column width={12} >
-                <Post></Post>
+                <Post
+                  author="Mark Zuckeberg"
+                  image="https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/68dd54ca-60cf-4ef7-898b-26d7cbe48ec7/10-dithering-opt.jpg"
+                  avatar="https://upload.wikimedia.org/wikipedia/commons/0/01/Mark_Zuckerberg_at_the_37th_G8_Summit_in_Deauville_018_square.jpg"
+                />
               </Grid.Column>
 
 
               <Grid.Column textAlign="center" width={4} >
-                <Rail>
+                <Rail position="center" >
                   <Sticky offset={70} context={contextRef}>
                     <Dimmer.Dimmable
                       as={Image}
