@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
-import {Card, Image,Button} from 'semantic-ui-react';
+import {Card, Image,Button, TextArea, Form} from 'semantic-ui-react';
+import '../App.css';
 
 class Post extends Component {
 
@@ -11,7 +12,8 @@ class Post extends Component {
           <Card
             style={{
               width: "100%",
-              backgroundColor:"rgba(128, 128, 128,0.4)"
+              backgroundColor:"rgba(128, 128, 128,0.4)",
+              marginBottom: 20
             }}
           >
             <Card.Header>
@@ -22,7 +24,7 @@ class Post extends Component {
                   height:62,
                   width: 62,
                   float:"left",
-                  margin: 5
+                  margin: 5,
                 }}
               />
               <h1>{' '}{this.props.author}</h1>
@@ -38,11 +40,20 @@ class Post extends Component {
                 margin:5
               }}
             >
-              <Button circular color='facebook' icon='facebook' />
-              <Button circular color='twitter' icon='twitter' />
-              <Button circular color='linkedin' icon='linkedin' />
-              <Button circular color='google plus' icon='google plus' />
+              <Button circular color='black' icon='paw' />
+              <Button circular color='white' icon='comments outline' />
             </div>
+            <Form
+              style={{
+                margin: 5
+              }}
+            >
+              <TextArea
+                autoHeight
+                placeholder='Comment this post'
+                rows={2}
+              />
+            </Form>
           </Card>
         </div>
       </div>
