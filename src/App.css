@@ -25,8 +25,7 @@ input::-webkit-input-placeholder{
 }
 
 .forms{
-
-	height: 102%;
+	height: 100vh;
 	background: linear-gradient(45deg, #bf0000, #5000bf, #00651a);
 	background-size: 600% 600%;
 

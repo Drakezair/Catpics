@@ -99,8 +99,7 @@ class Timeline extends PureComponent{
                     <h1>Bill Gates</h1>
                     <Grid stretched columns={3}  >
                       <Grid.Column><strong>8</strong> posts</Grid.Column>
-                      <Grid.Column><strong >999</strong> followed</Grid.Column>
-                      <Grid.Column><strong>5k</strong> follows</Grid.Column>
+                      <Grid.Column><strong >999</strong> likes</Grid.Column>
                     </Grid>
                     <Button
                       as="button"

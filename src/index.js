@@ -17,17 +17,5 @@ var config = {
 firebase.initializeApp(config);
 
 
-//FIREBASE ADMIN
-
-var admin = require('firebase-admin');
-
-var serviceAccount = require('./serviceAccountKey.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://catpics-d106c.firebaseio.com'
-});
-
-
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();

@@ -32,8 +32,8 @@ class Login extends Component{
                       placeholder='Password'
                     />
                     <Form.Group inline >
-                      <Link  to='/register'>Register now</Link>
-                      <Link style={{position:'absolute', right:0}} to='/forget'>forget?</Link>
+                      <Link style={{color:"white"}}  to='/register'>Register now</Link>
+                      <Link style={{position:'absolute', right:0, color:"white"}} to='/forget'>forget?</Link>
                     </Form.Group>
                   </Form>
                   <Button content='Login' />

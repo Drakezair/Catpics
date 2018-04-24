@@ -1,6 +1,8 @@
-.Login-Container{
+.Login-Container {
 
-    height: 100vh;
+
+  height: 102%;
+
     background: linear-gradient(45deg, #bf0000, #5000bf, #00651a);
     background-size: 600% 600%;
 
