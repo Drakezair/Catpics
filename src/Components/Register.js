@@ -77,8 +77,8 @@ class Register extends Component{
 	render(){
 
 		return(
-				<Grid padded centered verticalAlign="middle" className="register forms" >
-					<Grid.Column textAlign="center" width={16} style={{height:1}}>
+				<Grid padded centered verticalAlign="middle" /*className="register forms"*/ >
+					<Grid.Column textAlign="center" width={16} >
 						<Header
 							as="h1"
 							style={{

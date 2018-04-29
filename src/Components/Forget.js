@@ -13,16 +13,16 @@ class Forget extends Component{
         return(
 
             <Grid
-             textAlign='center'
-             className='Login-Container'
-             verticalAlign='middle'
+              textAlign='center'
+              className='Login-Container'
+              verticalAlign='middle'
             >
 
-                <Grid.Column className='Login-Inner' >
+              <Grid.Column className='Login-Inner' >
 
-                    <Segment   vertical >
-                        <Send />
-                    </Segment>
+                <Segment   vertical >
+                  <Send />
+                </Segment>
 
                 </Grid.Column>
 
@@ -37,17 +37,17 @@ class Send extends Component{
     render(){
         return(
             <div>
-                <Image as='img' src={profile} className='Login-Profile' />
-                <Form>
-                    <Form.Input
-                     icon='mail'
-                     iconPosition='left'
-                     placeholder="e-mail"
-                    />
-                </Form>
-                <Button style={{margin:20}} content='Send' />
-                <Form>
-                    <Link to='/' >Login with othe user</Link>
+              <Image as='img' src={profile} className='Login-Profile' />
+              <Form>
+                <Form.Input
+                  icon='mail'
+                  iconPosition='left'
+                  placeholder="e-mail"
+                />
+              </Form>
+              <Button style={{margin:20}} content='Send' />
+              <Form>
+                <Link style={{color: "white"}} to='/' >Login with othe user</Link>
                 </Form>
             </div>
         );
