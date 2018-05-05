@@ -18,30 +18,86 @@ class Timeline extends PureComponent{
     contextRef:null,
     uploadModal: false,
 
+    imageCropUrl: "",
+    imgProfileToUpload:null,
+
 
     username:"",
+    profileImgUrl:require('../Assets/Logo.png')
   }
 
   componentDidMount(){
     firebase.auth().onAuthStateChanged((user)=>{
       if(user){
-
+        this.setState({
+          username: user.displayName
+        });
       }else{
         // this.props.history.push("/");
       }
     })
   }
 
+  handleUploadModal= ()=>{
+    this.setState({uploadModal: !this.state.uploadModal})
+  }
+
+
+//PROFILE IMAGE PROCESS
+
+  handleCrop = () => {
+    if (typeof this.cropper.getCroppedCanvas() === 'undefined') {
+      return;
+    }
+    this.setState({profileImgUrl: this.cropper.getCroppedCanvas().toDataURL("image/png",0.5)});
+
+    var message = this.cropper.getCroppedCanvas().toDataURL("image/png,0.5")
+
+    firebase.storage().ref().child("hola.png").putString(message,'data_url')
+    .then((snapshot)=> {
+    console.log('Uploaded a data_url string!');
+  });
+  }
+
+
+
+//DIMMER
   DimShow= () => this.setState({active:true})
   DimHide= () => this.setState({active:false})
 
-  handleContextRef = contextRef => this.setState({ contextRef })
+  handleContextRef = contextRef => this.setState({ contextRef });
+
 
   render(){
     const { contextRef, active } = this.state;
     const content = (
       <div>
-        <Button icon="camera retro" size="massive" compact circular />
+        <Button
+          as = "label"
+          icon
+          size="massive"
+          compact circular
+        >
+          <Icon name="camera retro" />
+          <input
+            type="file"
+            style={{display:"none"}}
+            accept="image/*"
+            onChange={(e)=>{
+              e.preventDefault();
+
+              let reader = new FileReader();
+              let file = e.target.files[0];
+              reader.onloadend = () => {
+                this.setState({
+                  imageCropUrl: reader.result
+                });
+              }
+              reader.readAsDataURL(file);
+              this.handleUploadModal();
+            }}
+          />
+        </Button>
       </div>
     )
 
@@ -54,24 +110,43 @@ class Timeline extends PureComponent{
           />
         );
     }
+
+    const Crop = (props)=>{
+      return(
+        <Cropper
+          src={this.state.imageCropUrl}
+          aspectRatio={1/1}
+          viewMode={2}
+          autoCropArea={0.5}
+          dragMode="none"
+          autoCropArea={1}
+          style={{height: "400px"}}
+          ref={cropper => { this.cropper = cropper; }}
+          cropend={(e)=>{
+
+          }}
+        />
+      );
+    }
+
     return(
       <div ref={this.handleContextRef}>
-        <Modal open={true} >
+        <Modal open={this.state.uploadModal} >
           <Modal.Header textAlign="center" >Crop your cat </Modal.Header>
           <Modal.Content image>
             <Modal.Description>
               <Modal.Header>
-                <Cropper
-                  src={require('../Assets/Logo.png')}
-                  aspectRatio={1/1}
-                  viewMode={1}
-                  autoCropArea={0.5}
-                  dragMode="none"
-                  style={{height: "80vh"}}
-                />
+                <Crop />
               </Modal.Header>
             </Modal.Description>
           </Modal.Content>
+          <div style={{display:"flex", padding: 10, justifyContent:"center"}}>
+            <Button color="green" onClick={()=> {
+              this.handleCrop();
+              this.handleUploadModal()
+            }}>Done</Button>
+            <Button color="red" onClick={()=>{this.handleUploadModal()}} >Cancel</Button>
+          </div>
         </Modal>
         <Menu fixed='top'  style={{backgroundColor:'rgba(140, 0, 183,0.95)'}} >
           <Container>
@@ -79,6 +154,7 @@ class Timeline extends PureComponent{
             <h1 style={{marginBottom:'auto',marginTop:'auto', fontFamily:'Open sans', fontWeight:300, color:'#fff', fontSize:'1.4em'}} >CatPic's</h1>
           </Container>
         </Menu>
+
         <Container style={{marginTop: 70}} >
           <Grid columns={2}  >
             <Grid.Row>
@@ -98,16 +174,17 @@ class Timeline extends PureComponent{
                       dimmer={{active,content}}
                       onMouseEnter={this.DimShow}
                       onMouseLeave={this.DimHide}
-                      size='small'
-                      src='http://speakerbookingagency.com/wp-content/uploads/bb-plugin/cache/gates_print1-square.jpg'
+
+                      // src='http://speakerbookingagency.com/wp-content/uploads/bb-plugin/cache/gates_print1-square.jpg'
+                      src={this.state.profileImgUrl}
                     />
-                    <h1>Bill Gates</h1>
+                    <h1>{this.state.username}</h1>
                     <Grid stretched columns={2} >
                       <Grid.Column><strong>8</strong> posts</Grid.Column>
                       <Grid.Column><strong >999</strong> likes</Grid.Column>
                     </Grid>
                     <Button
-                      as="button"
+                      as="label"
                       icon
                       color="purple"
                       style={{
@@ -118,6 +195,7 @@ class Timeline extends PureComponent{
                     >
                       <Icon name='cloud upload' />
                       {'  '}Upload
+
                     </Button>
                   </Sticky>
                 </Rail>
