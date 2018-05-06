@@ -41,19 +41,21 @@ class Post extends Component {
               }}
             >
               <Button circular color='black' icon='paw' />
-              <Button circular color='white' icon='comments outline' />
             </div>
-            <Form
-              style={{
-                margin: 5
-              }}
-            >
-              <TextArea
-                autoHeight
-                placeholder='Comment this post'
-                rows={2}
-              />
-            </Form>
+            <div className="CommentArea" >
+              <Form
+                style={{
+                  margin: 5,
+                }}
+              >
+                <TextArea
+                  autoHeight
+                  placeholder='Comment this post'
+                  rows={1}
+                />
+              </Form>
+              <Button icon="send" style={{margin: "5px 5px 5px 0"}}/>
+            </div>
           </Card>
         </div>
       </div>

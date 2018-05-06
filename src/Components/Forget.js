@@ -59,9 +59,9 @@ class Sended extends Component{
     render(){
         return(
             <div>
-                <Image as='img' src={profile} className='Login-Profile' />
-                <Form>
-                    <h1 style={{color:'#fff'}} >We send you an email to {'<e-mail>'}</h1>
+              <Image as='img' src={profile} className='Login-Profile' />
+              <Form>
+                <h1 style={{color:'#fff'}} >We send you an email to {'<e-mail>'} with a link to reset your password</h1>
                 </Form>
             </div>
         );

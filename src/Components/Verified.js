@@ -12,6 +12,7 @@ class Verified extends Component{
         if(user.emailVerified===true){
           alert("Your account has been verified");
           this.props.history.push("/timeline")
+          clearInterval(this.handleConfirm);
         }
       }
     });

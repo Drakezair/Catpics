@@ -1,6 +1,6 @@
 import React,{PureComponent} from 'react';
 import * as firebase from "firebase";
-import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal} from 'semantic-ui-react';
+import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal, Loader, Segment} from 'semantic-ui-react';
 import {Redirect} from 'react-router-dom'
 import '../CSS/Timeline.css';
 
@@ -23,17 +23,28 @@ class Timeline extends PureComponent{
 
 
     username:"",
-    profileImgUrl:require('../Assets/Logo.png')
+    profileImgUrl:require('../Assets/Logo.png'),
+
+    loader: false
   }
 
   componentDidMount(){
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
     firebase.auth().onAuthStateChanged((user)=>{
       if(user){
-        this.setState({
-          username: user.displayName
-        });
+        if(user.emailVerified === false ){
+          //this.props.history.push("/verified");
+        }
+
+        this.setState({username: user.displayName});
+
+        firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
+        .then((url)=>{
+          this.setState({profileImgUrl: url})
+        })
+
       }else{
-        // this.props.history.push("/");
+        //this.props.history.push("/");
       }
     })
   }
@@ -49,15 +60,25 @@ class Timeline extends PureComponent{
     if (typeof this.cropper.getCroppedCanvas() === 'undefined') {
       return;
     }
-    this.setState({profileImgUrl: this.cropper.getCroppedCanvas().toDataURL("image/png",0.5)});
+    this.setState({profileImgUrl: this.cropper.getCroppedCanvas().toDataURL("image/jpeg",0.5)});
 
-    var message = this.cropper.getCroppedCanvas().toDataURL("image/png,0.5")
+    var message = this.cropper.getCroppedCanvas().toDataURL("image/jpeg,0.5")
 
-    firebase.storage().ref().child("hola.png").putString(message,'data_url')
-    .then((snapshot)=> {
-    console.log('Uploaded a data_url string!');
-  });
+
+    firebase.auth().onAuthStateChanged((user)=>{
+      if(user){
+        var date = new Date();
+        this.setState({loader:true});
+        firebase.storage().ref(user.displayName + "/Profile/").child("Profile.jpeg").putString(message,'data_url')
+        firebase.storage().ref(user.displayName + "/Profile/Collections").child(date.toString() + ".jpeg").putString(message,'data_url')
+        .then((snapshot)=> {
+          this.setState({loader:false});
+        });
+      }
+    });
   }
+
+
 
 
 
@@ -159,7 +180,7 @@ class Timeline extends PureComponent{
           <Grid columns={2}  >
             <Grid.Row>
 
-              <Grid.Column  computer={12} tablet={11} mobile={15} >
+              <Grid.Column  computer={12} tablet={11} mobile={16} >
                 <Posts />
               </Grid.Column>
               <Grid.Column textAlign="center" width={4}  >
@@ -184,7 +205,7 @@ class Timeline extends PureComponent{
                       <Grid.Column><strong >999</strong> likes</Grid.Column>
                     </Grid>
                     <Button
-                      as="label"
+                      //as="label"
                       icon
                       color="purple"
                       style={{
@@ -200,11 +221,20 @@ class Timeline extends PureComponent{
                   </Sticky>
                 </Rail>
               </Grid.Column>
-
             </Grid.Row>
           </Grid>
         </Container>
 
+        <div
+          style={{
+            position: "fixed",
+            bottom: 20,
+            right: 20
+
+          }}
+        >
+          <Loader active={this.state.loader} inline />
+        </div>
       </div>
         );
     }
