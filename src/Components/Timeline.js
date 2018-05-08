@@ -1,7 +1,6 @@
 import React,{PureComponent} from 'react';
 import * as firebase from "firebase";
-import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal, Loader, Segment} from 'semantic-ui-react';
-import {Redirect} from 'react-router-dom'
+import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal, Loader, Sidebar, Progress} from 'semantic-ui-react';
 import '../CSS/Timeline.css';
 
 import Cropper from 'react-cropper';
@@ -16,19 +15,27 @@ class Timeline extends PureComponent{
 
   state={
     contextRef:null,
+    profileModal: false,
     uploadModal: false,
 
     imageCropUrl: "",
-    imgProfileToUpload:null,
+    imgToUpload:"",
 
 
     username:"",
     profileImgUrl:require('../Assets/Logo.png'),
 
-    loader: false
+    loader: false,
+    profileImgLoader: false,
+    progressBar: "none",
+
+    progress: 0,
+
+
+    postList: null
   }
 
-  componentDidMount(){
+  componentWillMount(){
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
     firebase.auth().onAuthStateChanged((user)=>{
       if(user){
@@ -47,6 +54,12 @@ class Timeline extends PureComponent{
         //this.props.history.push("/");
       }
     })
+
+
+  }
+
+  handleProfileModal= ()=>{
+    this.setState({profileModal: !this.state.profileModal})
   }
 
   handleUploadModal= ()=>{
@@ -68,23 +81,66 @@ class Timeline extends PureComponent{
     firebase.auth().onAuthStateChanged((user)=>{
       if(user){
         var date = new Date();
-        this.setState({loader:true});
+        this.setState({profileImgLoader:true, active: true});
         firebase.storage().ref(user.displayName + "/Profile/").child("Profile.jpeg").putString(message,'data_url')
         firebase.storage().ref(user.displayName + "/Profile/Collections").child(date.toString() + ".jpeg").putString(message,'data_url')
         .then((snapshot)=> {
-          this.setState({loader:false});
+          this.setState({profileImgLoader:false, active: false});
         });
-      }
+
+      firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
+      .then((url) => {
+        firebase.database().ref(`users/${user.displayName}/${user.uid}`).child("profileImg").set("").then(()=>{
+            firebase.database().ref(`users/${user.displayName}/${user.uid}`).update({profileImg:url})
+        })
+      });
+    }
     });
   }
 
+  handleUploadModal = () => {
+      this.setState({uploadModal: !this.state.uploadModal});
+  }
+
+  handleUpload = () => {
+    if (typeof this.cropper1.getCroppedCanvas() === 'undefined') {
+      return;
+    }
+    this.setState({progressBar: "block"})
+    var msg = this.cropper1.getCroppedCanvas().toDataURL("image/jpeg,0.5");
+    var d = new Date();
+    firebase.auth().onAuthStateChanged((user)=>{
+      firebase.storage().ref('Posts/').child(`${d}-${user.displayName}.jpeg`).putString(msg,'data_url').on('state_changed', (snapshot)=>{
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        this.setState({progress: progress })
+
+        if(progress === 100){
+          setTimeout(()=>{this.setState({progressBar: "none",progress: 0})}, 1000);
+          firebase.storage().ref(`Posts/${d}-${user.displayName}.jpeg`).getDownloadURL()
+          .then((url)=>{
+            console.log("HOLA");
+            firebase.database().ref('posts/').push().set({
+              user: user.displayName,
+              likes: 0,
+              comments:"",
+              imgUrl: url
+            });
+          });
+        }
+      })
 
 
 
+    });
+  }
 
 //DIMMER
   DimShow= () => this.setState({active:true})
-  DimHide= () => this.setState({active:false})
+  DimHide= () => {
+    if(this.state.profileImgLoader !== true){
+      this.setState({active:false})
+    }
+  }
 
   handleContextRef = contextRef => this.setState({ contextRef });
 
@@ -98,6 +154,7 @@ class Timeline extends PureComponent{
           icon
           size="massive"
           compact circular
+          loading ={this.state.profileImgLoader}
         >
           <Icon name="camera retro" />
           <input
@@ -115,7 +172,7 @@ class Timeline extends PureComponent{
                 });
               }
               reader.readAsDataURL(file);
-              this.handleUploadModal();
+              this.handleProfileModal();
             }}
           />
         </Button>
@@ -126,7 +183,8 @@ class Timeline extends PureComponent{
         return(
           <Post
             author="Mar Zuckeberg"
-            image="https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/68dd54ca-60cf-4ef7-898b-26d7cbe48ec7/10-dithering-opt.jpg"
+            // image="https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/68dd54ca-60cf-4ef7-898b-26d7cbe48ec7/10-dithering-opt.jpg"
+            image={require('../Assets/Logo.png')}
             avatar="https://upload.wikimedia.org/wikipedia/commons/0/01/Mark_Zuckerberg_at_the_37th_G8_Summit_in_Deauville_018_square.jpg"
           />
         );
@@ -143,16 +201,27 @@ class Timeline extends PureComponent{
           autoCropArea={1}
           style={{height: "400px"}}
           ref={cropper => { this.cropper = cropper; }}
-          cropend={(e)=>{
+        />
+      );
+    }
 
-          }}
+    const Crop1 = (props)=>{
+      return(
+        <Cropper
+          src={this.state.imgToUpload}
+          viewMode={2}
+          autoCropArea={0.5}
+          dragMode="none"
+          autoCropArea={1}
+          style={{height: "400px"}}
+          ref={cropper => { this.cropper1 = cropper; }}
         />
       );
     }
 
     return(
       <div ref={this.handleContextRef}>
-        <Modal open={this.state.uploadModal} >
+        <Modal open={this.state.profileModal} >
           <Modal.Header textAlign="center" >Crop your cat </Modal.Header>
           <Modal.Content image>
             <Modal.Description>
@@ -164,11 +233,25 @@ class Timeline extends PureComponent{
           <div style={{display:"flex", padding: 10, justifyContent:"center"}}>
             <Button color="green" onClick={()=> {
               this.handleCrop();
+              this.handleProfileModal()
+            }}>Done</Button>
+            <Button color="red" onClick={()=>{this.handleProfileModal()}} >Cancel</Button>
+          </div>
+        </Modal>
+
+        <Modal  open={this.state.uploadModal} >
+          <Modal.Content>
+            <Crop1 />
+          </Modal.Content>
+          <div style={{display:"flex", padding: 10, justifyContent:"center"}}>
+            <Button color="green" onClick={()=> {
+              this.handleUpload();
               this.handleUploadModal()
             }}>Done</Button>
             <Button color="red" onClick={()=>{this.handleUploadModal()}} >Cancel</Button>
           </div>
         </Modal>
+
         <Menu fixed='top'  style={{backgroundColor:'rgba(140, 0, 183,0.95)'}} >
           <Container>
             <Image src={logo} style={{height: 50, margin: 6}} />
@@ -205,7 +288,7 @@ class Timeline extends PureComponent{
                       <Grid.Column><strong >999</strong> likes</Grid.Column>
                     </Grid>
                     <Button
-                      //as="label"
+                      as="label"
                       icon
                       color="purple"
                       style={{
@@ -216,8 +299,32 @@ class Timeline extends PureComponent{
                     >
                       <Icon name='cloud upload' />
                       {'  '}Upload
+                      <input
+                        type = "file"
+                        accept = "image/*"
+                        style={{display:'none'}}
+                        onChange={(e) => {
+                          e.preventDefault();
 
+                          let reader = new FileReader();
+                          let file = e.target.files[0];
+
+                          reader.onloadend = () => {
+                            this.setState({imgToUpload: reader.result});
+                          }
+
+                          reader.readAsDataURL(file);
+                          this.handleUploadModal();
+                        }}
+                      />
                     </Button>
+                    <Progress
+                      percent={this.state.progress}
+                      indicating
+                      style={{
+                        display: this.state.progressBar
+                      }}
+                    />
                   </Sticky>
                 </Rail>
               </Grid.Column>

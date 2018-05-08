@@ -1,6 +1,5 @@
 import React,{Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Grid, Segment, Button} from 'semantic-ui-react';
+import {Grid, Segment} from 'semantic-ui-react';
 import '../CSS/Login.css';
 import * as firebase from 'firebase';
 

@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {Card, Image,Button, TextArea, Form} from 'semantic-ui-react';
+import {Card, Image,Button, TextArea, Form, Label} from 'semantic-ui-react';
 import '../App.css';
 
 class Post extends Component {
@@ -41,6 +41,7 @@ class Post extends Component {
               }}
             >
               <Button circular color='black' icon='paw' />
+              <Label pointing='left' >10</Label>
             </div>
             <div className="CommentArea" >
               <Form
