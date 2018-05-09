@@ -1,13 +1,13 @@
-import React,{Component} from 'react';
+import React,{PureComponent} from 'react';
 import {Card, Image,Button, TextArea, Form, Label} from 'semantic-ui-react';
 import '../App.css';
 
-class Post extends Component {
+class Post extends PureComponent {
 
 
   render(){
     return(
-      <div>
+      <div >
         <div>
           <Card
             style={{
@@ -16,24 +16,19 @@ class Post extends Component {
               marginBottom: 20
             }}
           >
-            <Card.Header>
+            <Card.Header style={{display:"flex", alignItems: "center"}}>
               <Image
-                src={this.props.avatar}
+                src={require('../Assets/Logo.png')}
                 circular
-                style={{
-                  height:62,
-                  width: 62,
-                  float:"left",
-                  margin: 5,
-                }}
+                className="Avatar"
               />
-              <h1>{' '}{this.props.author}</h1>
+              <h1 style={{display:"inline", margin: "auto 0"}} >{' '}{this.props.pic.user}</h1>
             </Card.Header>
             <Image
               style={{
                 margin: 'auto'
               }}
-              src= {this.props.image}
+              src= {this.props.pic.imgUrl}
             />
             <div
               style={{
@@ -41,7 +36,7 @@ class Post extends Component {
               }}
             >
               <Button circular color='black' icon='paw' />
-              <Label pointing='left' >10</Label>
+              <Label pointing='left' >{this.props.pic.likes}</Label>
             </div>
             <div className="CommentArea" >
               <Form

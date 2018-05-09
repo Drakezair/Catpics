@@ -1,3 +1,15 @@
+.CommentArea {
+  display:grid;
+  grid-template-columns: 1fr 60px;
+}
+
+.Avatar {
+  display: inline !important;
+  width: 60px;
+  margin: 5px
+}
+
+
 @media screen and (max-width: 1474px) {
   .profile {
     width: 220px !important;
@@ -20,9 +32,4 @@
   .profile {
     display:none;
   }
-}
-
-.CommentArea {
-  display:grid;
-  grid-template-columns: 1fr 60px;
 }

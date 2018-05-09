@@ -20,6 +20,7 @@ class Timeline extends PureComponent{
 
     imageCropUrl: "",
     imgToUpload:"",
+    fileToUpload: null,
 
 
     username:"",
@@ -32,7 +33,7 @@ class Timeline extends PureComponent{
     progress: 0,
 
 
-    postList: null
+    postList: [],
   }
 
   componentWillMount(){
@@ -48,6 +49,12 @@ class Timeline extends PureComponent{
         firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
         .then((url)=>{
           this.setState({profileImgUrl: url})
+        })
+
+        firebase.database().ref(`posts`).on('child_added',(snapshot)=>{
+          this.setState({
+            postList: this.state.postList.concat(snapshot.val())
+          });
         })
 
       }else{
@@ -109,16 +116,19 @@ class Timeline extends PureComponent{
     this.setState({progressBar: "block"})
     var msg = this.cropper1.getCroppedCanvas().toDataURL("image/jpeg,0.5");
     var d = new Date();
+
+    var ds
     firebase.auth().onAuthStateChanged((user)=>{
-      firebase.storage().ref('Posts/').child(`${d}-${user.displayName}.jpeg`).putString(msg,'data_url').on('state_changed', (snapshot)=>{
+      firebase.storage().ref(`Posts/${this.state.fileToUpload}_${user.displayName}`).putString(msg,'data_url').on('state_changed', (snapshot)=>{
         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         this.setState({progress: progress })
 
         if(progress === 100){
-          setTimeout(()=>{this.setState({progressBar: "none",progress: 0})}, 1000);
-          firebase.storage().ref(`Posts/${d}-${user.displayName}.jpeg`).getDownloadURL()
+          setTimeout(()=>{
+          this.setState({progressBar: "none",progress: 0})
+          firebase.storage().ref(`Posts/${this.state.fileToUpload}_${user.displayName}`).getDownloadURL()
           .then((url)=>{
-            console.log("HOLA");
+
             firebase.database().ref('posts/').push().set({
               user: user.displayName,
               likes: 0,
@@ -126,10 +136,9 @@ class Timeline extends PureComponent{
               imgUrl: url
             });
           });
+          }, 1000);
         }
       })
-
-
 
     });
   }
@@ -144,6 +153,20 @@ class Timeline extends PureComponent{
 
   handleContextRef = contextRef => this.setState({ contextRef });
 
+
+
+
+  Posts = () => {
+      return(
+        <div>
+          {
+            this.state.postList.map(pic =>(
+              <Post pic={pic} />
+            )).reverse()
+          }
+        </div>
+      )
+  }
 
   render(){
     const { contextRef, active } = this.state;
@@ -179,16 +202,6 @@ class Timeline extends PureComponent{
       </div>
     )
 
-    function Posts(props){
-        return(
-          <Post
-            author="Mar Zuckeberg"
-            // image="https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/68dd54ca-60cf-4ef7-898b-26d7cbe48ec7/10-dithering-opt.jpg"
-            image={require('../Assets/Logo.png')}
-            avatar="https://upload.wikimedia.org/wikipedia/commons/0/01/Mark_Zuckerberg_at_the_37th_G8_Summit_in_Deauville_018_square.jpg"
-          />
-        );
-    }
 
     const Crop = (props)=>{
       return(
@@ -264,8 +277,11 @@ class Timeline extends PureComponent{
             <Grid.Row>
 
               <Grid.Column  computer={12} tablet={11} mobile={16} >
-                <Posts />
+
+                {this.Posts()}
+
               </Grid.Column>
+
               <Grid.Column textAlign="center" width={4}  >
                 <Rail position="center" className="profile" >
                   <Sticky offset={70} context={contextRef} >
@@ -310,7 +326,7 @@ class Timeline extends PureComponent{
                           let file = e.target.files[0];
 
                           reader.onloadend = () => {
-                            this.setState({imgToUpload: reader.result});
+                            this.setState({imgToUpload: reader.result,fileToUpload:file.name });
                           }
 
                           reader.readAsDataURL(file);
