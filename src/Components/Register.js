@@ -34,6 +34,13 @@ class Register extends Component{
 						username: this.state.username,
 						email: this.state.email,
 
+
+					});
+
+					firebase.database().ref('users/' + this.state.username).set({
+						profileUrl: "",
+						likes: 0,
+						posts: 0
 					});
 
 					user.updateProfile({

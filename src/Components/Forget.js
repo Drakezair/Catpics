@@ -18,12 +18,10 @@ class Forget extends Component{
               verticalAlign='middle'
             >
 
-              <Grid.Column className='Login-Inner' >
+              <Grid.Column computer={5} tablet={8} mobile={14} className='Login-Inner' >
 
-                <Segment   vertical >
-                  <Send />
-                </Segment>
-
+                <Send />
+                
                 </Grid.Column>
 
             </Grid>

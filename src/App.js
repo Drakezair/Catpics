@@ -8,7 +8,7 @@ import {BrowserRouter as Router, Route,Switch} from 'react-router-dom';
 import Login from './Components/Login';
 import Register from './Components/Register';
 import Verified from './Components/Verified';
-import Forget from './Components/Forget';
+import Forget,{Send}from './Components/Forget';
 import Timeline from './Components/Timeline';
 
 // css

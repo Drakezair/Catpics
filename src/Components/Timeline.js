@@ -25,6 +25,8 @@ class Timeline extends PureComponent{
 
     username:"",
     profileImgUrl:require('../Assets/Logo.png'),
+    userLikes: 0,
+    userPosts: 0,
 
     loader: false,
     profileImgLoader: false,
@@ -34,6 +36,8 @@ class Timeline extends PureComponent{
 
 
     postList: [],
+
+    usuario: null,
   }
 
   componentWillMount(){
@@ -44,17 +48,41 @@ class Timeline extends PureComponent{
           //this.props.history.push("/verified");
         }
 
-        this.setState({username: user.displayName});
+        this.setState({username: user.displayName,usuario: user});
+
+        var ref = firebase.database().ref(`users/${user.displayName}`);
+
+        ref.child('likes').on('value',(snapshot)=>{
+          this.setState({userLikes: snapshot.val() });
+        });
+
+        ref.child('posts').on('value',(snapshot)=>{
+          this.setState({userPosts: snapshot.val() });
+        })
 
         firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
         .then((url)=>{
           this.setState({profileImgUrl: url})
         })
 
-        firebase.database().ref(`posts`).on('child_added',(snapshot)=>{
+        var postRef = firebase.database().ref(`posts`);
+
+        postRef.on('child_added',(snapshot)=>{
           this.setState({
-            postList: this.state.postList.concat(snapshot.val())
+            postList: this.state.postList.concat(snapshot.val()),
           });
+        });
+
+        firebase.database().ref(`users/${user.displayName}`).on('value',snapshot=>{
+          this.setState({
+            userLikes: snapshot.child('likes').val()
+          })
+        })
+
+        firebase.database().ref(`users/${user.displayName}`).on('value',snapshot=>{
+          this.setState({
+            userPosts: snapshot.child('posts').val()
+          })
         })
 
       }else{
@@ -90,17 +118,21 @@ class Timeline extends PureComponent{
         var date = new Date();
         this.setState({profileImgLoader:true, active: true});
         firebase.storage().ref(user.displayName + "/Profile/").child("Profile.jpeg").putString(message,'data_url')
+        .then(()=>{
+          firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
+          .then((url) => {
+
+              firebase.database().ref(`users/${user.displayName}`).update({profileUrl:url})
+
+          })
+        })
+
         firebase.storage().ref(user.displayName + "/Profile/Collections").child(date.toString() + ".jpeg").putString(message,'data_url')
         .then((snapshot)=> {
           this.setState({profileImgLoader:false, active: false});
         });
 
-      firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
-      .then((url) => {
-        firebase.database().ref(`users/${user.displayName}/${user.uid}`).child("profileImg").set("").then(()=>{
-            firebase.database().ref(`users/${user.displayName}/${user.uid}`).update({profileImg:url})
-        })
-      });
+
     }
     });
   }
@@ -117,9 +149,12 @@ class Timeline extends PureComponent{
     var msg = this.cropper1.getCroppedCanvas().toDataURL("image/jpeg,0.5");
     var d = new Date();
 
-    var ds
+
+
+
+
     firebase.auth().onAuthStateChanged((user)=>{
-      firebase.storage().ref(`Posts/${this.state.fileToUpload}_${user.displayName}`).putString(msg,'data_url').on('state_changed', (snapshot)=>{
+      firebase.storage().ref(`Posts/${user.displayName}_${this.state.fileToUpload}_${user.displayName}`).putString(msg,'data_url').on('state_changed', (snapshot)=>{
         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         this.setState({progress: progress })
 
@@ -129,12 +164,24 @@ class Timeline extends PureComponent{
           firebase.storage().ref(`Posts/${this.state.fileToUpload}_${user.displayName}`).getDownloadURL()
           .then((url)=>{
 
-            firebase.database().ref('posts/').push().set({
+            var newKey = firebase.database().ref().child('posts').push().key;
+
+            firebase.database().ref('posts/' + newKey).set({
               user: user.displayName,
               likes: 0,
               comments:"",
-              imgUrl: url
+              imgUrl: url,
+              key: newKey,
+              usersliked: ""
             });
+
+            firebase.database().ref(`users/${user.displayName}`).once('value',snapshot=>{
+              firebase.database().ref(`users/${user.displayName}`).update({
+                posts: this.state.userPosts + 1
+              })
+            }).then(()=>{
+              console.log("+1")
+            })
           });
           }, 1000);
         }
@@ -160,8 +207,8 @@ class Timeline extends PureComponent{
       return(
         <div>
           {
-            this.state.postList.map(pic =>(
-              <Post pic={pic} />
+            this.state.postList.map((pic, index) =>(
+              <Post pic={pic} key = {index} usuario={this.state.usuario} />
             )).reverse()
           }
         </div>
@@ -195,6 +242,7 @@ class Timeline extends PureComponent{
                 });
               }
               reader.readAsDataURL(file);
+              e.target.value = null;
               this.handleProfileModal();
             }}
           />
@@ -235,7 +283,7 @@ class Timeline extends PureComponent{
     return(
       <div ref={this.handleContextRef}>
         <Modal open={this.state.profileModal} >
-          <Modal.Header textAlign="center" >Crop your cat </Modal.Header>
+          <Modal.Header textalign="center" >Crop your cat </Modal.Header>
           <Modal.Content image>
             <Modal.Description>
               <Modal.Header>
@@ -300,8 +348,8 @@ class Timeline extends PureComponent{
                     />
                     <h1>{this.state.username}</h1>
                     <Grid stretched columns={2} >
-                      <Grid.Column><strong>8</strong> posts</Grid.Column>
-                      <Grid.Column><strong >999</strong> likes</Grid.Column>
+                      <Grid.Column><strong >{this.state.userLikes}</strong> likes</Grid.Column>
+                      <Grid.Column><strong>{this.state.userPosts}</strong> posts</Grid.Column>
                     </Grid>
                     <Button
                       as="label"
@@ -325,11 +373,14 @@ class Timeline extends PureComponent{
                           let reader = new FileReader();
                           let file = e.target.files[0];
 
+
                           reader.onloadend = () => {
                             this.setState({imgToUpload: reader.result,fileToUpload:file.name });
                           }
 
+
                           reader.readAsDataURL(file);
+                          e.target.value = null;
                           this.handleUploadModal();
                         }}
                       />

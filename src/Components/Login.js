@@ -83,12 +83,12 @@ class Login extends Component{
                     <Link style={{color:"white"}}  to='/register'>Register now</Link>
                     <Link style={{position:'absolute', right:0, color:"white"}} to='/forget'>forget?</Link>
                   </Form.Group>
+                  <Button
+                    loading={this.state.loading}
+                    content='Login'
+                    onClick={this.SignIn}
+                  />
                 </Form>
-                <Button
-                  loading={this.state.loading}
-                  content='Login'
-                  onClick={this.SignIn}
-                />
               </Grid.Column>
 
             </Grid>
