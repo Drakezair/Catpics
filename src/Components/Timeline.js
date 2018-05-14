@@ -39,7 +39,12 @@ class Timeline extends PureComponent{
 
     usuario: null,
     widthScreen:0,
-    logOutModal: false
+    logOutModal: false,
+    sidebar:false,
+
+    profileProgress: 0,
+    profileBar: "none"
+
   }
 
   componentWillMount(){
@@ -51,6 +56,11 @@ class Timeline extends PureComponent{
       this.setState({
         widthScreen: window.innerWidth
       })
+      if(window.innerWidth >= 768){
+        this.setState({
+          sidebar:false
+        })
+      }
     });
 
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
@@ -117,6 +127,7 @@ class Timeline extends PureComponent{
     if (typeof this.cropper.getCroppedCanvas() === 'undefined') {
       return;
     }
+    this.setState({profileBar: "block"})
     this.setState({profileImgUrl: this.cropper.getCroppedCanvas().toDataURL("image/jpeg",0.5)});
 
     var message = this.cropper.getCroppedCanvas().toDataURL("image/jpeg,0.5")
@@ -126,8 +137,18 @@ class Timeline extends PureComponent{
       if(user){
         var date = new Date();
         this.setState({profileImgLoader:true, active: true});
-        firebase.storage().ref(user.displayName + "/Profile/").child("Profile.jpeg").putString(message,'data_url')
-        .then(()=>{
+        var upload = firebase.storage().ref(user.displayName + "/Profile/").child("Profile.jpeg").putString(message,'data_url')
+        upload.on('state_changed',(snapshot)=>{
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.setState({
+            profileProgress: progress
+          });
+          console.log(progress);
+        })
+        upload.then(()=>{
+          this.setState({
+            profileProgress: 0,profileBar:"none"
+          })
           firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
           .then((url) => {
 
@@ -209,6 +230,12 @@ class Timeline extends PureComponent{
     })
   }
 
+  handleSidebar = ()=>{
+    this.setState({
+      sidebar: !this.state.sidebar
+    })
+  }
+
 //DIMMER
   DimShow= () => this.setState({active:true})
   DimHide= () => {
@@ -279,7 +306,7 @@ class Timeline extends PureComponent{
           autoCropArea={0.5}
           dragMode="none"
           autoCropArea={1}
-          style={{height: "400px"}}
+          style={{height: "400px",width:"90%"}}
           ref={cropper => { this.cropper = cropper; }}
         />
       );
@@ -300,7 +327,7 @@ class Timeline extends PureComponent{
     }
 
     var ActionButton = () =>{
-      if(window.innerWidth > 768){
+      if(window.innerWidth > 767){
         return(
           <Button icon="log out"
             size="huge"
@@ -325,7 +352,7 @@ class Timeline extends PureComponent{
               margin: 10,
               background: "#e0e1e200",
             }}
-            onClick={()=>{console.log(this.state.widthScreen);}}
+            onClick={()=>{this.handleSidebar()}}
           />
 
         )
@@ -380,6 +407,97 @@ class Timeline extends PureComponent{
             <Button color="red" onClick={()=>{this.handleUploadModal()}} >Cancel</Button>
           </div>
         </Modal>
+
+        <Sidebar visible={this.state.sidebar} direction="right" style={{background:"#808080bf"}} >
+          <Image
+            circular
+            style={{margin: "10px auto"}}
+            // src='http://speakerbookingagency.com/wp-content/uploads/bb-plugin/cache/gates_print1-square.jpg'
+            src={this.state.profileImgUrl}
+          />
+          <Button
+            as="label"
+            icon
+            color="purple"
+            style={{
+                width:'90%',
+                margin:'15px',
+                borderRadius:12
+            }}
+          >
+            <Icon name='cloud upload' />
+            {'  '}Set profile pic
+            <input
+              type = "file"
+              accept = "image/*"
+              style={{display:'none'}}
+              onChange={(e) => {
+                e.preventDefault();
+
+                let reader = new FileReader();
+                let file = e.target.files[0];
+
+
+                reader.onloadend = () => {
+                  this.setState({imageCropUrl: reader.result,fileToUpload:file.name });
+                }
+
+
+                reader.readAsDataURL(file);
+                e.target.value = null;
+                this.handleProfileModal();
+              }}
+            />
+          </Button>
+          <Progress
+            percent={this.state.profileProgress}
+            indicating
+            style={{
+              display: this.state.profileBar,margin:"0 10px"
+            }}
+          />
+          <Button
+            as="label"
+            icon
+            color="purple"
+            style={{
+                width:'90%',
+                margin:'15px',
+                borderRadius:12
+            }}
+          >
+            <Icon name='cloud upload' />
+            {'  '}Upload
+            <input
+              type = "file"
+              accept = "image/*"
+              style={{display:'none'}}
+              onChange={(e) => {
+                e.preventDefault();
+
+                let reader = new FileReader();
+                let file = e.target.files[0];
+
+
+                reader.onloadend = () => {
+                  this.setState({imgToUpload: reader.result,fileToUpload:file.name });
+                }
+
+
+                reader.readAsDataURL(file);
+                e.target.value = null;
+                this.handleUploadModal();
+              }}
+            />
+          </Button>
+          <Progress
+            percent={this.state.progress}
+            indicating
+            style={{
+              display: this.state.progressBar,margin:"0 10px"
+            }}
+          />
+        </Sidebar>
 
         <Menu fixed='top'  style={{backgroundColor:'rgba(140, 0, 183,0.95)'}} >
           <Container style={{position:"relative"}}>

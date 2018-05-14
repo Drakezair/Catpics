@@ -2,12 +2,15 @@ import React,{Component} from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import '../CSS/Login.css';
 import { Grid,Segment,Image,Form,Button } from 'semantic-ui-react';
-import {BrowserRouter as Router,Switch,Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router,Switch,Route, Link,Redirect} from 'react-router-dom';
+import * as firebase from 'firebase';
 
 import profile from '../Assets/profile.png';
 
+var email = "";
 
 class Forget extends Component{
+
 
     render(){
         return(
@@ -23,7 +26,12 @@ class Forget extends Component{
                 <Router basename="/forget" >
                   <Switch>
                     <Route exact path="/" component={Send} />
-                    <Route path="/sended" component={Sended} />
+                    <Route path="/sended" >
+                      <div>
+                        <Sended />
+                        <Button content="Next" onClick={()=>{this.props.history.push("/")}}/>
+                      </div>
+                    </Route>
                   </Switch>
                 </Router>
               </Grid.Column>
@@ -37,7 +45,8 @@ class Forget extends Component{
 export class Send extends Component{
 
   state={
-    email: ""
+    loading: false,
+    emails:""
   }
 
     render(){
@@ -47,19 +56,36 @@ export class Send extends Component{
               <Form>
                 <Form.Input
                   icon='mail'
+                  type="email"
                   iconPosition='left'
                   placeholder="e-mail"
                   onChange={(e)=>{
+                    email = e.target.value
                     this.setState({
-                      email: e.target.value
+                      emails: email
                     })
                   }}
                 />
-                <Button style={{margin:20}} content='Send' />
+                <Button style={{margin:20}} content='Send' loading={this.state.loading}
+                  onClick={()=>{
+                    this.setState({
+                      loading: true
+                    })
+                    console.log(this.state.emails);
+                    firebase.auth().sendPasswordResetEmail(email)
+                    .then(()=>{
+                      this.props.history.push("/sended")
+                    })
+                    .catch((error)=>{
+                      var erros = error.message
+                      alert(erros);
+                      this.setState({
+                        loading: false
+                      })
+                    })
+                  }}
+                />
               </Form>
-              <Form>
-                <Link style={{color: "white"}} to='/' >Login with othe user</Link>
-                </Form>
             </div>
         );
     }
@@ -67,13 +93,25 @@ export class Send extends Component{
 
 export class Sended extends Component{
 
+  state={
+    email:""
+  }
+
+  componentWillMount(){
+    this.setState({
+      email: email
+    })
+  }
+
     render(){
         return(
             <div>
               <Image as='img' src={profile} className='Login-Profile' />
               <Form>
-                <h1 style={{color:'#fff'}} >We send you an email to {'<e-mail>'} with a link to reset your password</h1>
-                </Form>
+                <h1 style={{color:'#fff',}} >
+                  We send you an email to {this.state.email} with a link to reset your password
+                </h1>
+              </Form>
             </div>
         );
     }
