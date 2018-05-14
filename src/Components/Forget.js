@@ -23,7 +23,7 @@ class Forget extends Component{
 
               <Grid.Column computer={5} tablet={8} mobile={14} className='Login-Inner' >
 
-                <Router basename="/forget" >
+                <Router basename="/catpic/forget" >
                   <Switch>
                     <Route exact path="/" component={Send} />
                     <Route path="/sended" >

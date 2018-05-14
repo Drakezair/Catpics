@@ -63,6 +63,10 @@ class Register extends Component{
 			alert(errorCode);
   		// ...
 
+			if(errorCode === "auth/email-already-in-use"){
+				alert("there already exists an account with the given email address.")
+			}
+
 		});
 	}
 
@@ -172,7 +176,7 @@ class Register extends Component{
 							Join now</Button>
 						</Form>
 						<Header>
-							<Link to="/" style={{color:'white'}} >if you have an account, click here.</Link>
+							<Link to="/" style={{color:'white'}} > if you have an account, click here.</Link>
 						</Header>
 					</Grid.Column>
 				</Grid>

@@ -213,7 +213,7 @@ class Timeline extends PureComponent{
               console.log("+1")
             })
           });
-          }, 1000);
+        }, 4000);
         }
       })
 

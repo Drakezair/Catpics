@@ -17,15 +17,15 @@ class App extends Component {
 
   render() {
     return (
-        <Router>
+        <Router basename="/catpic/">
           <Switch>
-            <Route exact path="/" component={Login} />
+            <Route exact path='/' component={Login} />
             <Route path ="/register" component={Register} />
             <Route path ="/forget" component={Forget} />
             <Route path ="/timeline" component={Timeline} />
           </Switch>
         </Router>
-    );
+        );
   }
 }
 

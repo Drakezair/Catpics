@@ -42,8 +42,6 @@ class Login extends Component{
           alert('Wrong password.');
           this.setState({password:"",passError: true})
         }
-
-
       });
     }
 
