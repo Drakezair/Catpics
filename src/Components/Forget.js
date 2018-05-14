@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import '../CSS/Login.css';
 import { Grid,Segment,Image,Form,Button } from 'semantic-ui-react';
-import {Link} from 'react-router-dom';
+import {BrowserRouter as Router,Switch,Route, Link} from 'react-router-dom';
 
 import profile from '../Assets/profile.png';
 
@@ -20,9 +20,13 @@ class Forget extends Component{
 
               <Grid.Column computer={5} tablet={8} mobile={14} className='Login-Inner' >
 
-                <Send />
-                
-                </Grid.Column>
+                <Router basename="/forget" >
+                  <Switch>
+                    <Route exact path="/" component={Send} />
+                    <Route path="/sended" component={Sended} />
+                  </Switch>
+                </Router>
+              </Grid.Column>
 
             </Grid>
 
@@ -30,7 +34,11 @@ class Forget extends Component{
     }
 }
 
-class Send extends Component{
+export class Send extends Component{
+
+  state={
+    email: ""
+  }
 
     render(){
         return(
@@ -41,9 +49,14 @@ class Send extends Component{
                   icon='mail'
                   iconPosition='left'
                   placeholder="e-mail"
+                  onChange={(e)=>{
+                    this.setState({
+                      email: e.target.value
+                    })
+                  }}
                 />
+                <Button style={{margin:20}} content='Send' />
               </Form>
-              <Button style={{margin:20}} content='Send' />
               <Form>
                 <Link style={{color: "white"}} to='/' >Login with othe user</Link>
                 </Form>
@@ -52,7 +65,7 @@ class Send extends Component{
     }
 }
 
-class Sended extends Component{
+export class Sended extends Component{
 
     render(){
         return(

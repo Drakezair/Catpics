@@ -1,6 +1,6 @@
 import React,{PureComponent} from 'react';
 import * as firebase from "firebase";
-import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal, Loader, Sidebar, Progress} from 'semantic-ui-react';
+import { Menu, Grid, Container,Image,Rail,Sticky, Button,Icon, Dimmer, Modal, Loader, Sidebar, Progress,Header} from 'semantic-ui-react';
 import '../CSS/Timeline.css';
 
 import Cropper from 'react-cropper';
@@ -38,15 +38,24 @@ class Timeline extends PureComponent{
     postList: [],
 
     usuario: null,
+    widthScreen:0,
+    logOutModal: false
   }
 
   componentWillMount(){
+    this.setState({
+      widthScreen: window.innerWidth
+    })
+
+    window.addEventListener("resize", ()=>{
+      this.setState({
+        widthScreen: window.innerWidth
+      })
+    });
+
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
     firebase.auth().onAuthStateChanged((user)=>{
       if(user){
-        if(user.emailVerified === false ){
-          //this.props.history.push("/verified");
-        }
 
         this.setState({username: user.displayName,usuario: user});
 
@@ -86,7 +95,7 @@ class Timeline extends PureComponent{
         })
 
       }else{
-        //this.props.history.push("/");
+        this.props.history.push("/");
       }
     })
 
@@ -161,7 +170,7 @@ class Timeline extends PureComponent{
         if(progress === 100){
           setTimeout(()=>{
           this.setState({progressBar: "none",progress: 0})
-          firebase.storage().ref(`Posts/${this.state.fileToUpload}_${user.displayName}`).getDownloadURL()
+          firebase.storage().ref(`Posts/${user.displayName}_${this.state.fileToUpload}_${user.displayName}`).getDownloadURL()
           .then((url)=>{
 
             var newKey = firebase.database().ref().child('posts').push().key;
@@ -188,6 +197,16 @@ class Timeline extends PureComponent{
       })
 
     });
+  }
+
+  logOut= ()=>{
+    firebase.auth().signOut();
+  }
+
+  handleLogOut=()=>{
+    this.setState({
+      logOutModal: !this.state.logOutModal
+    })
   }
 
 //DIMMER
@@ -280,8 +299,57 @@ class Timeline extends PureComponent{
       );
     }
 
+    var ActionButton = () =>{
+      if(window.innerWidth > 768){
+        return(
+          <Button icon="log out"
+            size="huge"
+            color="black"
+            style={{
+              position:"absolute",
+              right:0,
+              margin: 10,
+              background: "#e0e1e200",
+            }}
+            onClick={()=>{this.handleLogOut()}}
+          />
+        )
+      }else{
+        return(
+          <Button icon="sidebar"
+            size="huge"
+            color="black"
+            style={{
+              position:"absolute",
+              right:0,
+              margin: 10,
+              background: "#e0e1e200",
+            }}
+            onClick={()=>{console.log(this.state.widthScreen);}}
+          />
+
+        )
+      }
+    }
+
     return(
       <div ref={this.handleContextRef}>
+
+        <Modal size="mini" open={this.state.logOutModal} >
+          <Modal.Header>
+            Are you sure you want to leave?
+          </Modal.Header>
+          <Modal.Content>
+            <p>Dude, just a few post, the rest can wait</p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={()=>{this.handleLogOut()}}>
+              No
+            </Button>
+            <Button positive icon='checkmark' labelPosition='right' content='Yes' onClick={()=>{this.logOut()}} />
+          </Modal.Actions>
+        </Modal>
+
         <Modal open={this.state.profileModal} >
           <Modal.Header textalign="center" >Crop your cat </Modal.Header>
           <Modal.Content image>
@@ -314,9 +382,10 @@ class Timeline extends PureComponent{
         </Modal>
 
         <Menu fixed='top'  style={{backgroundColor:'rgba(140, 0, 183,0.95)'}} >
-          <Container>
+          <Container style={{position:"relative"}}>
             <Image src={logo} style={{height: 50, margin: 6}} />
             <h1 style={{marginBottom:'auto',marginTop:'auto', fontFamily:'Open sans', fontWeight:300, color:'#fff', fontSize:'1.4em'}} >CatPic's</h1>
+            <ActionButton />
           </Container>
         </Menu>
 

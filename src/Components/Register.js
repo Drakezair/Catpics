@@ -40,7 +40,7 @@ class Register extends Component{
 					firebase.database().ref('users/' + this.state.username).set({
 						profileUrl: "",
 						likes: 0,
-						posts: 0
+						posts: 0,
 					});
 
 					user.updateProfile({
@@ -48,7 +48,7 @@ class Register extends Component{
 					});
 					user.sendEmailVerification()
 					.then(()=>{
-						this.props.history.push("/verified");
+						this.props.history.push("/timeline");
 						clearInterval(this.fill);
 					});
 				}
@@ -59,6 +59,8 @@ class Register extends Component{
   		// Handle Errors here.
   		var errorCode = error.code;
   		var errorMessage = error.message;
+
+			alert(errorCode);
   		// ...
 
 		});
