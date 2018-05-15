@@ -1,4 +1,3 @@
-## Std::Grams
+## CatPic's
 
 share your pictures, enjoy!
-
