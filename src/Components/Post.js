@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import {Card, Image,Button, TextArea, Form, Label, Comment, Modal} from 'semantic-ui-react';
 import '../App.css';
 import * as firebase from 'firebase';
+import Comentario from './Comentario';
 
 class Post extends Component {
 
@@ -146,27 +147,8 @@ class Post extends Component {
       <div >
         {
           this.state.comentarios.map((com, index)=>{
-
             return(
-              <Comment.Group key={index} style={{margin: 5, maxWidth: "none"}} >
-                <Comment>
-                  <Comment.Avatar src={com.avatar} />
-                  <Comment.Content
-                    style={{
-                      background:"#dfdcdc",
-                      padding: "0 5px",
-                      borderRadius: 5
-                    }}
-                  >
-                    <Comment.Author style={{color: "#3333f8", fontSize: "15px"}} >{com.username}</Comment.Author>
-                    <Comment.Text value={this.state.comment} >
-                      {com.comment.split('\n').map((item, key) => {
-                        return <span key={key}>{item}<br/></span>
-                      })}
-                    </Comment.Text>
-                  </Comment.Content>
-                </Comment>
-              </Comment.Group>
+              <Comentario comentario={com} key={index} />
             )
           })
         }

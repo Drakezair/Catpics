@@ -37,20 +37,20 @@ class Register extends Component{
 
 					});
 
-					firebase.database().ref('users/' + this.state.username).set({
-						profileUrl: "",
-						likes: 0,
-						posts: 0,
-					});
-
 					user.updateProfile({
 						displayName: this.state.username,
 					});
 					user.sendEmailVerification()
 					.then(()=>{
+						firebase.database().ref('users/' + user.displayName).set({
+							profileUrl: "",
+							likes: 0,
+							posts: 0,
+						});
 						this.props.history.push("/timeline");
 						clearInterval(this.fill);
 					});
+
 				}
 		});
 	})
