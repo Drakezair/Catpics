@@ -13,6 +13,7 @@ import Post from './Post';
 
 class Timeline extends PureComponent{
 
+//ESTADOS
   state={
     contextRef:null,
     profileModal: false,
