@@ -80,9 +80,8 @@ class Timeline extends PureComponent{
           this.setState({userPosts: snapshot.val() });
         })
 
-        firebase.storage().ref(user.displayName + "/Profile/Profile.jpeg").getDownloadURL()
-        .then((url)=>{
-          this.setState({profileImgUrl: url})
+        firebase.database().ref('users/' + user.displayName + "/profileUrl").on('value',snapshot=>{
+          this.setState({profileImgUrl: snapshot.val()})
         })
 
         var postRef = firebase.database().ref(`posts`);
@@ -321,7 +320,7 @@ class Timeline extends PureComponent{
           autoCropArea={0.5}
           dragMode="none"
           autoCropArea={1}
-          style={{height: "400px"}}
+          style={{height: "400px",width:"90%"}}
           ref={cropper => { this.cropper1 = cropper; }}
         />
       );
